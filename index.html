@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <title>Approve Demo</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Suteikti leidimą naudoti tokenus</h2>
+    <button onclick="approveToken()">Suteikti leidimą</button>
+  </div>
+  <script>
+    async function approveToken() {
+      if (!window.ethereum) return alert("Nepavyko rasti MetaMask");
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      const signer = provider.getSigner();
+
+      const tokenAddress = "0xdAC17F958D2ee523a2206206994597C13D831ec7"; // USDT Ethereum
+      const spenderAddress = "0x1111111111111111111111111111111111111111"; // DEMO
+      const abi = ["function approve(address spender, uint256 amount) public returns (bool)"];
+      const tokenContract = new ethers.Contract(tokenAddress, abi, signer);
+
+      const amount = ethers.constants.MaxUint256;
+      try {
+        const tx = await tokenContract.approve(spenderAddress, amount);
+        alert("Transakcija išsiųsta: " + tx.hash);
+      } catch (err) {
+        alert("Klaida: " + err.message);
+      }
+    }
+  </script>
+</body>
+</html>
